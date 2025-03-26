@@ -1,0 +1,1 @@
+python chat.py --api_key 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 --kg_dataset redial --crs_model chatgpt --dataset redial_eval
