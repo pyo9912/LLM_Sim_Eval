@@ -83,7 +83,7 @@ class KBRD():
             self.crs_conv_model = KBRDforConv.from_pretrained(self.conv_model, user_hidden_size=self.entity_hidden_size).to(self.device)
         self.crs_conv_model = self.accelerator.prepare(self.crs_conv_model)
     
-    def get_rec(self, conv_dict):
+    def get_rec(self, conv_dict, response=None):
         
         data_dict = {
             'item': [self.entity2id[rec] for rec in conv_dict['rec'] if rec in self.entity2id],

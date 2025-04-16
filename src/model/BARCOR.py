@@ -53,7 +53,7 @@ class BARCOR():
         
         
         
-    def get_rec(self, conv_dict):
+    def get_rec(self, conv_dict, response=None):
         
         # dataset
         text_list = []

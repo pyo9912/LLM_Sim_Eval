@@ -70,61 +70,6 @@ def load_processed_json_files_for_model(model, timelog, topk):
     
     return all_turns, success_turns, fail_turns
 
-def count_state(model, timelog, topk):
-    timelog = timelog
-    topk = topk
-    all_turns, success_turns, fail_turns = load_processed_json_files_for_model(model, timelog, topk)
-    total = success_turns[1] + fail_turns[1]
-    success_total = success_turns[1] + success_turns[2] + success_turns[3] + success_turns[4] + success_turns[5]
-
-    max_turn = 5  # 최대 턴 수
-    state_patterns = {i: [] for i in range(1, max_turn + 1)}
-    
-    # 실제 등장한 state_list 저장
-    for dialog in total:
-        state_list = tuple(dialog.get("state_list", []))
-        if state_list:
-            state_patterns[len(state_list)].append(state_list)
-    
-    # 가능한 모든 조합 생성
-    all_combinations = {i: [] for i in range(1, max_turn + 1)}
-    for turn in range(1, max_turn + 1):
-        all_combinations[turn] = [combo + ('rec',) for combo in product(['rec', 'chat'], repeat=turn - 1)]
-    
-    # 패턴 개수 세기
-    pattern_counts = {turn: Counter(state_patterns[turn]) for turn in range(1, max_turn + 1)}
-    
-    print("State Pattern Counts:")
-    
-    # 가능한 모든 조합을 출력 (등장하지 않은 조합도 포함하여 0으로 출력)
-    for turn in range(1, max_turn + 1):
-        for pattern in all_combinations[turn]:
-            count = pattern_counts[turn].get(pattern, 0)
-            print(f"{', '.join(pattern)}: {count}")
-    
-    return pattern_counts
-
-def count_state_prev(model, timelog, topk):
-    timelog = timelog
-    topk = topk
-    all_turns, success_turns, fail_turns = load_processed_json_files_for_model(model, timelog, topk)
-
-    state_patterns = []
-    
-    for dialog in all_turns[1]:
-        state_list = tuple(dialog.get("state_list", []))  # 튜플로 변환하여 리스트 패턴을 키로 사용 가능하게 함
-        if state_list:
-            state_patterns.append(state_list)
-    
-    pattern_counts = Counter(state_patterns)  # 각 패턴의 개수를 세기
-    
-    print("State Pattern Counts:")
-    
-    # 단일 상태 패턴 출력
-    for pattern, count in sorted(pattern_counts.items(), key=lambda x: len(x[0])):
-        print(f"{', '.join(pattern)}: {count}")
-    
-    return pattern_counts
 
 def write_state(dialog_list):
     chat_list = []
@@ -289,17 +234,17 @@ def write_state_for_turn_samples(model, timelog, topk):
 
         # 전체 데이터 처리
         new_dialog_list = write_state(all_turns[turn])
-        new_dialog_list = write_recall(new_dialog_list)
+        # new_dialog_list = write_recall(new_dialog_list)
         save_json(new_dialog_list, os.path.join(BASE_DIR, model, timelog, str(turn), f"all_{topk}_samples_{model}_in_turn_{turn}.json"))
 
         # 성공 데이터 처리
         new_dialog_list = write_state(success_turns[turn])
-        new_dialog_list = write_recall(new_dialog_list)
+        # new_dialog_list = write_recall(new_dialog_list)
         save_json(new_dialog_list, os.path.join(BASE_DIR, model, timelog, str(turn), f"success_{topk}_samples_{model}_in_turn_{turn}.json"))
 
         # 실패 데이터 처리
         new_dialog_list = write_state(fail_turns[turn])
-        new_dialog_list = write_recall(new_dialog_list)
+        # new_dialog_list = write_recall(new_dialog_list)
         save_json(new_dialog_list, os.path.join(BASE_DIR, model, timelog, str(turn), f"fail_{topk}_samples_{model}_in_turn_{turn}.json"))
 
 def detect_rec_or_chat_for_model(model, timelog, topk):
@@ -337,53 +282,19 @@ def write_state_for_turn_samples(model, timelog, topk):
 
         # 전체 데이터 처리
         new_dialog_list = write_state(all_turns[turn])
-        new_dialog_list = write_recall(new_dialog_list)
+        # new_dialog_list = write_recall(new_dialog_list)
         save_json(new_dialog_list, os.path.join(BASE_DIR, model, timelog, str(turn), f"all_{topk}_samples_{model}_in_turn_{turn}.json"))
 
         # 성공 데이터 처리
         new_dialog_list = write_state(success_turns[turn])
-        new_dialog_list = write_recall(new_dialog_list)
+        # new_dialog_list = write_recall(new_dialog_list)
         save_json(new_dialog_list, os.path.join(BASE_DIR, model, timelog, str(turn), f"success_{topk}_samples_{model}_in_turn_{turn}.json"))
 
         # 실패 데이터 처리
         new_dialog_list = write_state(fail_turns[turn])
-        new_dialog_list = write_recall(new_dialog_list)
+        # new_dialog_list = write_recall(new_dialog_list)
         save_json(new_dialog_list, os.path.join(BASE_DIR, model, timelog, str(turn), f"fail_{topk}_samples_{model}_in_turn_{turn}.json"))
 
-def count_avg_state_for_turn_samples(model, timelog, topk):
-    """모델별로 turn 데이터를 보고 state (rec/chat) 의 평균 개수 카운트"""
-    topk = topk
-    all_turns, success_turns, fail_turns = load_json_files_for_model(model, timelog, topk)
-
-    for turn in range(1, 6):
-        if turn not in success_turns:
-            continue
-        
-        cnt, rec_cnt, chat_cnt = 0.0, 0.0, 0.0
-        success_samples = success_turns[turn]
-
-        len_history_state_list = turn - 1
-        for sample in success_samples:
-            if len_history_state_list == 0:
-                break
-            else:
-                history_state_list = sample['state_list'].copy()
-                history_state_list = history_state_list[:-1]
-
-                for history in history_state_list:
-                    if history == 'rec':
-                        rec_cnt += 1.0
-                    elif history == 'chat':
-                        chat_cnt += 1.0
-                    cnt += 1.0
-        
-        if len_history_state_list == 0:
-            print(f"turn: {turn}\nrec_avg: {rec_cnt}\nchat_avg: {chat_cnt}")
-        else:
-            print(f"turn: {turn}\nrec_avg: {(rec_cnt)}\nchat_avg: {(chat_cnt)}")
-            # print(f"turn: {turn}\nrec_avg: {(rec_cnt/cnt)}\nchat_avg: {(chat_cnt/cnt)}")
-            # print(f"turn: {turn}\nrec_avg: {(rec_cnt/cnt)*len_history_state_list}\nchat_avg: {(chat_cnt/cnt)*len_history_state_list}")
-            
         
 
 if __name__ == "__main__":
@@ -396,9 +307,9 @@ if __name__ == "__main__":
     model = args.model  # 사용할 모델 지정
     timelog = args.timelog
 
-    # detect_rec_or_chat_for_model(model, timelog, topk=topk)
-    # write_state_for_turn_samples(model, timelog, topk=topk)
+    detect_rec_or_chat_for_model(model, timelog, topk=topk)
+    write_state_for_turn_samples(model, timelog, topk=topk)
     # count_avg_state_for_turn_samples(model, timelog, topk=topk)
-    count_state(model, timelog, topk=topk)
+    # count_state(model, timelog, topk=topk)
 
 

@@ -97,10 +97,10 @@ class UNICRS():
         self.conv_prompt_encoder = self.conv_prompt_encoder.to(self.device)
         self.conv_prompt_encoder = self.accelerator.prepare(self.conv_prompt_encoder)
 
-    def get_rec(self, conv_dict):
+    def get_rec(self, conv_dict, response=None):
         text_list = []
         turn_idx = 0
-        for utt in conv_dict['context']:
+        for utt in conv_dict['context']: # + [response[response.rfind("System: ") + len("System: "):]]: #[response]는 우리가 넣어준거
             if utt != '':
                 text = ''
                 if turn_idx % 2 == 0:

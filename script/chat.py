@@ -8,6 +8,7 @@ import time
 import typing
 import warnings
 import tiktoken
+from parser import parse_args
 from datetime import datetime
 from pytz import timezone
 import openai
@@ -189,7 +190,7 @@ def annotate_completion(prompt, logit_bias=None):
             # )['choices'][0]['text']
 
             response = openai.ChatCompletion.create(
-                model='gpt-4o-mini', 
+                model='gpt-4o', 
                 # model='gpt-4o', 
                 messages=[
                     {'role': 'user', 'content': prompt}
@@ -236,8 +237,8 @@ def get_instruction(dataset):
 
     return seeker_instruction
 
-def get_model_args(model_name):
-    if model_name == 'kbrd':
+def get_model_args(args):
+    if args.crs_model == 'kbrd':
         args_dict = {
             'debug': args.debug, 'kg_dataset': args.kg_dataset, 'hidden_size': args.hidden_size,
             'entity_hidden_size': args.entity_hidden_size, 'num_bases': args.num_bases,
@@ -247,20 +248,25 @@ def get_model_args(model_name):
             'attn_head': args.attn_head, 'resp_max_length': args.resp_max_length,
             'seed':args.seed
         }
-    elif model_name == 'barcor':
+    elif args.crs_model == 'barcor':
         args_dict = {
             'debug': args.debug, 'kg_dataset': args.kg_dataset, 'rec_model': args.rec_model, 'conv_model': args.conv_model, 'context_max_length': args.context_max_length,
             'resp_max_length': args.resp_max_length, 'tokenizer_path': args.tokenizer_path, 'seed': args.seed
         }
-    elif model_name == 'unicrs':
+    elif 'unicrs' in args.crs_model:
         args_dict = {
             'debug': args.debug, 'seed': args.seed, 'kg_dataset': args.kg_dataset, 'tokenizer_path': args.tokenizer_path,
             'context_max_length': args.context_max_length, 'entity_max_length': args.entity_max_length, 'resp_max_length': args.resp_max_length,
             'text_tokenizer_path': args.text_tokenizer_path,
             'rec_model': args.rec_model, 'conv_model': args.conv_model, 'model': args.model, 'num_bases': args.num_bases, 'text_encoder': args.text_encoder
         }
-    elif 'chatgpt' in model_name:
+    elif 'chatgpt' in args.crs_model:
         args_dict = {
+            'seed': args.seed, 'debug': args.debug, 'kg_dataset': args.kg_dataset, 'crs_prompt': args.crs_prompt
+        }
+    elif 'llama' in args.crs_model:
+        args_dict = {
+            'args' : args, 'conv_model': args.conv_model, 'crs_prompt': args.crs_prompt,
             'seed': args.seed, 'debug': args.debug, 'kg_dataset': args.kg_dataset
         }
     else:
@@ -272,53 +278,7 @@ if __name__ == '__main__':
     local_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
     warnings.filterwarnings("ignore")
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--api_key', type=str, default='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')
-    parser.add_argument('--dataset', type=str, default='redial_eval', choices=['redial_eval', 'opendialkg_eval'])
-    parser.add_argument('--turn_num', type=int, default=5)
-    parser.add_argument('--crs_model', type=str, default='chatgpt') #, choices=['kbrd', 'barcor', 'unicrs', 'chatgpt'])
-    parser.add_argument('--chatgpt_model', type=str, default='gpt-4o-mini') # gpt-4o
-    parser.add_argument('--timelog', type=str)
-    parser.add_argument('--user_prompt', type=str, default='ours')
-    parser.add_argument('--crs_prompt', type=str, default = 'original')
-
-    parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--kg_dataset', type=str, default='redial', choices=['redial', 'opendialkg'])
-    
-    # model_detailed
-    parser.add_argument('--hidden_size', type=int)
-    parser.add_argument('--entity_hidden_size', type=int)
-    parser.add_argument('--num_bases', type=int, default=8)
-    parser.add_argument('--context_max_length', type=int)
-    parser.add_argument('--entity_max_length', type=int)
-    
-    # model
-    parser.add_argument('--rec_model', type=str)
-    parser.add_argument('--conv_model', type=str)
-    
-    # conv
-    parser.add_argument('--tokenizer_path', type=str)
-    parser.add_argument('--encoder_layers', type=int)
-    parser.add_argument('--decoder_layers', type=int)
-    parser.add_argument('--text_hidden_size', type=int)
-    parser.add_argument('--attn_head', type=int)
-    parser.add_argument('--resp_max_length', type=int)
-    
-    # prompt
-    parser.add_argument('--model', type=str)
-    parser.add_argument('--text_tokenizer_path', type=str)
-    parser.add_argument('--text_encoder', type=str)
-    parser.add_argument('--topk',type=int, default=50)
-
-    args = parser.parse_args()
-
-    from platform import system as sysChecker
-    if sysChecker() == 'Linux':
-        args.home = os.path.dirname(os.path.dirname(__file__))
-    elif sysChecker() == "Windows":
-        args.home = ''
-    print(args.home)
+    args = parse_args()
 
     openai.api_key = args.api_key
     if args.timelog:
@@ -334,7 +294,7 @@ if __name__ == '__main__':
     logit_bias = {encoding.encode(str(score))[0]: 10 for score in range(3)}
     
     # recommender
-    model_args = get_model_args(args.crs_model)
+    model_args = get_model_args(args)
     recommender = RECOMMENDER(crs_model=args.crs_model, **model_args)
 
     # recommender_instruction, seeker_instruction_template, seeker_instruction_template_v2, seeker_instruction_template_terminate = get_instruction(args.dataset)
@@ -392,10 +352,7 @@ if __name__ == '__main__':
 
         for i in range(0, args.turn_num):
             # rec only
-            if 'chatgpt' in args.crs_model:
-                _, recommender_text = recommender.get_conv(conv_dict, args.crs_prompt)
-            else:
-                _, recommender_text = recommender.get_conv(conv_dict)
+            _, recommender_text = recommender.get_conv(conv_dict)
             rec_items, rec_labels = recommender.get_rec(conv_dict, recommender_text)
 
             for rec_label in rec_labels:

@@ -17,6 +17,35 @@ from tenacity.wait import wait_base
 from thefuzz import fuzz
 from tqdm import tqdm
 
+
+chat_recommender_instruction_original = '''You are a recommender engaging in a conversation with the user to provide recommendations. You must follow the instructions below during the chat:
+If you have sufficient confidence in the user's preferences, you should recommend 10 items the user is most likely to prefer without any explanations. The recommendation list can contain items that were already mentioned in the dialog. The format of the recommendation list is: no. title (year).
+If you do not have sufficient confidence in the user's preferences, you should ask the user about their preferences.
+
+'''
+chat_recommender_instruction_ours = '''You are a recommender engaging in a conversation with the user to provide recommendations. You must follow the instructions below during the chat:
+If you have sufficient confidence in the user's preferences, you should recommend 10 items the user is most likely to prefer without any explanations. The recommendation list can contain items that were already mentioned in the dialog. The format of the recommendation list is: no. title (year).
+If you do not have sufficient confidence in the user's preferences, you should ask the user about their preferences.
+
+Be careful when making your decision.
+'''
+chat_recommender_instruction_only_rec = '''You are a recommender engaging in a conversation with the user to provide recommendations.
+You should recommend 10 items the user is most likely to prefer without any explanations. The recommendation list can contain items that were already mentioned in the dialog. The format of the recommendation list is: no. title (year).
+'''
+chat_recommender_instruction_only_ask = '''You are a recommender engaging in a conversation with the user to provide recommendations.
+In all cases, you must always ask the user to clarify their preferences in more detail.
+DO NOT RECOMMEND ITEMS
+'''
+chat_recommender_instruction_topk = '''You are a recommender chatting with the user to provide recommendation. You must follow the instructions below during chat.
+If you do not have enough information about user preference, you should ask the user for his preference.
+If you have enough information about user preference, you can give recommendation. The recommendation list must contain 10 items that are consistent with user preference. The recommendation list can contain items that the dialog mentioned before. The format of the recommendation list is: no. title. Don't mention anything other than the title of items in your recommendation list.'''
+
+chat_recommender_instruction_prev = '''You are a chat agent interacting with the user to provide recommendations. You must follow the instructions below during the chat:
+
+If you do not have enough information about the user's preferences, you should ask the user for their preference.
+If you have enough information about the user's preferences, you should call the recommender agent by responding with "CALL RECOMMENDER".'''
+    
+
 def my_before_sleep(retry_state):
     logger.debug(f'Retrying: attempt {retry_state.attempt_number} ended with: {retry_state.outcome}, spend {retry_state.seconds_since_start} in total')
 
@@ -92,13 +121,13 @@ def annotate_chat(messages, logit_bias=None):
 
 class CHATGPT():
     
-    def __init__(self, seed, debug, kg_dataset) -> None:
-        self.seed = seed
-        self.debug = debug
+    def __init__(self, **kwargs) -> None:
+        self.seed = kwargs['seed']
+        self.debug = kwargs['debug']
         if self.seed is not None:
             set_seed(self.seed)
         
-        self.kg_dataset = kg_dataset
+        self.kg_dataset = kwargs['kg_dataset']
         
         self.kg_dataset_path = f"../data/{self.kg_dataset}"
         with open(f"{self.kg_dataset_path}/entity2id.json", 'r', encoding="utf-8") as f:
@@ -126,35 +155,18 @@ class CHATGPT():
 
         self.id2item_id_arr = np.asarray(id2item_id)
         self.item_emb_arr = np.asarray(item_emb_list)
+        self.crs_prompt = kwargs['crs_prompt']
+        if self.crs_prompt == 'ours':
+            self.instruction = chat_recommender_instruction_ours
+        elif self.crs_prompt == 'only_rec':
+            self.instruction = chat_recommender_instruction_only_rec
+        elif self.crs_prompt == 'only_ask':
+            self.instruction = chat_recommender_instruction_only_ask
+        else:
+            self.instruction = chat_recommender_instruction_original
+
 
 #  In this case, you may also recommend the items that have already been mentioned in the dialog
-        self.chat_recommender_instruction_original = '''You are a recommender engaging in a conversation with the user to provide recommendations. You must follow the instructions below during the chat:
-If you have sufficient confidence in the user's preferences, you should recommend 10 items the user is most likely to prefer without any explanations. The recommendation list can contain items that were already mentioned in the dialog. The format of the recommendation list is: no. title (year).
-If you do not have sufficient confidence in the user's preferences, you should ask the user about their preferences.
-
-'''
-        self.chat_recommender_instruction_ours = '''You are a recommender engaging in a conversation with the user to provide recommendations. You must follow the instructions below during the chat:
-If you have sufficient confidence in the user's preferences, you should recommend 10 items the user is most likely to prefer without any explanations. The recommendation list can contain items that were already mentioned in the dialog. The format of the recommendation list is: no. title (year).
-If you do not have sufficient confidence in the user's preferences, you should ask the user about their preferences.
-
-Be careful when making your decision.
-'''
-        self.chat_recommender_instruction_only_rec = '''You are a recommender engaging in a conversation with the user to provide recommendations.
-You should recommend 10 items the user is most likely to prefer without any explanations. The recommendation list can contain items that were already mentioned in the dialog. The format of the recommendation list is: no. title (year).
-'''
-        self.chat_recommender_instruction_only_ask = '''You are a recommender engaging in a conversation with the user to provide recommendations.
-In all cases, you must always ask the user to clarify their preferences in more detail.
-DO NOT RECOMMEND ITEMS
-'''
-        self.chat_recommender_instruction_topk = '''You are a recommender chatting with the user to provide recommendation. You must follow the instructions below during chat.
-If you do not have enough information about user preference, you should ask the user for his preference.
-If you have enough information about user preference, you can give recommendation. The recommendation list must contain 10 items that are consistent with user preference. The recommendation list can contain items that the dialog mentioned before. The format of the recommendation list is: no. title. Don't mention anything other than the title of items in your recommendation list.'''
-
-        self.chat_recommender_instruction_prev = '''You are a chat agent interacting with the user to provide recommendations. You must follow the instructions below during the chat:
-
-If you do not have enough information about the user's preferences, you should ask the user for their preference.
-If you have enough information about the user's preferences, you should call the recommender agent by responding with "CALL RECOMMENDER".'''
-    
     def get_rec(self, conv_dict, response=None):
         
         rec_labels = [self.entity2id[rec] for rec in conv_dict['rec'] if rec in self.entity2id]
@@ -195,20 +207,13 @@ If you have enough information about the user's preferences, you should call the
         
         return item_rank_arr, rec_labels
     
-    def get_conv(self, conv_dict, crs_prompt):
-        if crs_prompt == 'original':
-            instruction = self.chat_recommender_instruction_original
-        elif crs_prompt == 'ours':
-            instruction = self.chat_recommender_instruction_ours
-        elif crs_prompt == 'only_rec':
-            instruction = self.chat_recommender_instruction_only_rec
-        elif crs_prompt == 'only_ask':
-            instruction = self.chat_recommender_instruction_only_ask
+    def get_conv(self, conv_dict):
+
         context = conv_dict['context']
         context_list = [] # for model
         context_list.append({
             'role': 'system',
-            'content': instruction
+            'content': self.instruction
         })
         
         for i, text in enumerate(context):
