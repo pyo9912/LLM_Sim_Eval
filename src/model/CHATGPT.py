@@ -111,7 +111,7 @@ def annotate_chat(messages, logit_bias=None):
     ):
         with attempt:
             response = openai.ChatCompletion.create(
-                model='gpt-4o',
+                model='gpt-4.1',
                 messages=messages, temperature=0, logit_bias=logit_bias,
                 request_timeout=request_timeout,
             )['choices'][0]['message']['content']
