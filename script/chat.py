@@ -448,7 +448,7 @@ if __name__ == '__main__':
                 'role': 'assistant',
                 'content': recommender_text,
                 'entity': recommender_resp_entity,
-                'rec_items': [id2entity[i] for i in rec_items[0]],
+                'rec_items': [id2entity[i] for i in rec_items[0][:args.topk]],
                 'rec_labels': [id2entity[i] for i in rec_labels],
                 'rec_success': rec_success
             })
