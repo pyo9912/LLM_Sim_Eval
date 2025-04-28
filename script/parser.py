@@ -3,7 +3,7 @@ import os
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--api_key', type=str, default='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')
+    parser.add_argument('--api_key', type=str)
     parser.add_argument('--dataset', type=str, default='redial_eval', choices=['redial_eval', 'opendialkg_eval'])
     parser.add_argument('--turn_num', type=int, default=5)
     parser.add_argument('--crs_model', type=str, default='chatgpt') #, choices=['kbrd', 'barcor', 'unicrs', 'chatgpt'])

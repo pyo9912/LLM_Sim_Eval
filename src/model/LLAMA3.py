@@ -209,7 +209,7 @@ class LLAMA3:
             context_list.append({"role": role_str, "content": text})
         
         context_list = context_list[-5:]
-        if self.args.crs_promt == 'only_rec':
+        if self.args.crs_prompt == 'only_rec':
             instruction = instruction_rec
         else:
             instruction = instruction_ours

@@ -137,7 +137,7 @@ def rec_eval(args, turn_num, mode, turn_accuracy, topk, timelog):
     
             output_dir = f"/home/user/junpyo/iEvaLM-CRS-main/save_{turn_num}/output/{model}/{timelog}/{turn_accuracy}"
             os.makedirs(output_dir, exist_ok=True)
-            all_samples_path = f"/home/user/junpyo/iEvaLM-CRS-main/save_{turn_num}/output/all_samples_{model}.json"
+            all_samples_path = f"/home/user/junpyo/iEvaLM-CRS-main/save_{turn_num}/output/all_samples_train_{model}.json"
             turn_samples_path = f"{output_dir}/all_samples_{model}_in_turn_{turn_accuracy}.json"
             success_1_samples_path = f"{output_dir}/success_1_samples_{model}_in_turn_{turn_accuracy}.json"
             fail_1_samples_path = f"{output_dir}/fail_1_samples_{model}_in_turn_{turn_accuracy}.json"
