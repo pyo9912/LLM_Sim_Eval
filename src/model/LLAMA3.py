@@ -35,11 +35,19 @@ from tenacity.wait import wait_base
 from thefuzz import fuzz
 
 
-instruction_ours = """You are a recommender engaging in a conversation with the user to provide recommendations. 
+instruction_ours = """You are a recommender engaging in a conversation with the user to provide recommendations.
 You must follow the instructions below during the chat:
-If you have sufficient confidence in the user's preferences, you should recommend 10 items the user is most likely to prefer without any explanations. 
-The recommendation list can contain items that were already mentioned in the dialog. The format of the recommendation list is: no. title (year).
-If you do not have sufficient confidence in the user's preferences, you should ask the user about their preferences."""
+
+1. If you have sufficient confidence in the user's preferences, you should recommend 10 items the user is most likely to prefer without any explanations. The recommendation list can contain items that were already mentioned in the dialog. The format of the recommendation list is: no. title (year).
+2. If you do not have sufficient confidence in the user's preferences, you should ask the user about their preferences.
+
+You must either recommend or ask about the user's preferences; you must not do both simultaneously."""
+
+# instruction_ours = """You are a recommender engaging in a conversation with the user to provide recommendations. 
+# You must follow the instructions below during the chat:
+# If you have sufficient confidence in the user's preferences, you should recommend 10 items the user is most likely to prefer without any explanations. 
+# The recommendation list can contain items that were already mentioned in the dialog. The format of the recommendation list is: no. title (year).
+# If you do not have sufficient confidence in the user's preferences, you should ask the user about their preferences."""
 
 instruction_rec = """You are a recommender engaging in a conversation with the user to provide recommendations. 
 You must recommend 10 items the user is most likely to prefer without any explanations. 
