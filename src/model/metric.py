@@ -1,7 +1,7 @@
 import math
 
 class RecMetric:
-    def __init__(self, k_list=(1, 10, 50)):
+    def __init__(self, k_list=(1, 5, 10)):
         self.k_list = k_list
         self.metric = {}
         self.reset_metric()

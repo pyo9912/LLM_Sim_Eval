@@ -32,7 +32,7 @@ def rec_eval(args, turn_num, mode, turn_accuracy, topk, timelog):
             success_1_samples, fail_1_samples = [], []
             success_10_samples, fail_10_samples = [], []
             success_50_samples, fail_50_samples = [], []
-            metric = RecMetric([1, 10, 25, 50])
+            metric = RecMetric([1, 5, 10])
             persuatiness = 0
             save_path = f"/home/user/junpyo/iEvaLM-CRS-main/save_{turn_num}/{mode}/{model}/{dataset}/{topk}/{timelog}" # data loaded path
             result_path = f"/home/user/junpyo/iEvaLM-CRS-main/save_{turn_num}/result/{mode}/{model}/{timelog}"
@@ -126,7 +126,7 @@ def rec_eval(args, turn_num, mode, turn_accuracy, topk, timelog):
                         
                 report = metric.report()
                 
-                print('r1:', f"{report['recall@1']:.3f}", 'r10:', f"{report['recall@10']:.3f}", 'r25:', f"{report['recall@25']:.3f}", 'r50:', f"{report['recall@50']:.3f}", 'count:', report['count'])
+                print('r1:', f"{report['recall@1']:.3f}", 'r5:', f"{report['recall@5']:.3f}", 'r10:', f"{report['recall@10']:.3f}", 'count:', report['count']) #'r50:', f"{report['recall@50']:.3f}", 
                 if mode == 'chat':
                     persuativeness_score = persuatiness / len(path_list)
                     print(f"{persuativeness_score:.3f}")
