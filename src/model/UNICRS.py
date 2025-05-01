@@ -1,3 +1,4 @@
+import os
 import json
 import torch
 from accelerate import Accelerator
@@ -39,8 +40,8 @@ class UNICRS():
         
         self.text_encoder = f"{text_encoder}"
         self.model_path = f"{model}"
-        self.rec_model_path = f"/home/user/junpyo/iEvaLM-CRS-main/src/{rec_model}"
-        self.conv_model_path = f"/home/user/junpyo/iEvaLM-CRS-main/src/{conv_model}"
+        self.rec_model_path =  os.path.join(os.path.dirname(os.getcwd()),f"src/{rec_model}") # f"/home/user/junpyo/iEvaLM-CRS-main/src/{rec_model}"
+        self.conv_model_path = os.path.join(os.path.dirname(os.getcwd()),f"src/{conv_model}") # f"/home/user/junpyo/iEvaLM-CRS-main/src/{conv_model}"
 
         # config
         gpt2_special_tokens_dict, prompt_special_tokens_dict = get_special_tokens_dict(kg_dataset)
@@ -67,7 +68,8 @@ class UNICRS():
         self.kg_dataset = kg_dataset
         self.kg = KGForUniCRS(kg=self.kg_dataset, debug=self.debug).get_kg_info()
         self.item_ids = torch.as_tensor(self.kg['item_ids'], device=self.device)
-        self.kg_dataset_path = f"/home/user/junpyo/iEvaLM-CRS-main/data/{self.kg_dataset}"
+        self.kg_dataset_path = os.path.join(os.path.dirname(os.getcwd()),f"data/{self.kg_dataset}")
+        # self.kg_dataset_path = f"/home/user/junpyo/iEvaLM-CRS-main/data/{self.kg_dataset}"
         with open(f"{self.kg_dataset_path}/entity2id.json", 'r', encoding="utf-8") as f:
             self.entity2id = json.load(f)
         self.entity_pad_id = self.kg['pad_entity_id']
