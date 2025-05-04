@@ -27,6 +27,8 @@ class RECOMMENDER():
             crs_model_name = 'llama3'
         elif 'unicrs' in crs_model:
             crs_model_name = 'unicrs'
+        elif 'kbrd' in crs_model:
+            crs_model_name = 'kbrd'
         else:
             crs_model_name = crs_model
         model_class = name2class[crs_model_name]
