@@ -35,8 +35,10 @@ class KBRD():
         self.context_max_length = context_max_length
         self.entity_max_length = entity_max_length
         # model
-        self.rec_model = f"/home/user/junpyo/iEvaLM-CRS-main/src/{rec_model}"
-        self.conv_model = f"/home/user/junpyo/iEvaLM-CRS-main/src/{conv_model}"
+        self.rec_model_path =  os.path.join(os.path.dirname(os.getcwd()),f"src/{rec_model}") 
+        self.conv_model_path = os.path.join(os.path.dirname(os.getcwd()),f"src/{conv_model}") 
+        # self.rec_model = f"/home/user/junpyo/iEvaLM-CRS-main/src/{rec_model}"
+        # self.conv_model = f"/home/user/junpyo/iEvaLM-CRS-main/src/{conv_model}"
         # conv
         # self.tokenizer_path = f"../src/{tokenizer_path}"
         self.tokenizer_path = f"{tokenizer_path}"
@@ -48,8 +50,8 @@ class KBRD():
         self.resp_max_length = resp_max_length
         self.padding = 'max_length'
         self.pad_to_multiple_of = 8
-            
-        self.kg_dataset_path = f"/home/user/junpyo/iEvaLM-CRS-main/data/{self.kg_dataset}"
+        self.kg_dataset_path = os.path.join(os.path.dirname(os.getcwd()),f"data/{self.kg_dataset}")
+        # self.kg_dataset_path = f"/home/user/junpyo/iEvaLM-CRS-main/data/{self.kg_dataset}"
         with open(f"{self.kg_dataset_path}/entity2id.json", 'r', encoding="utf-8") as f:
             self.entity2id = json.load(f)
         
