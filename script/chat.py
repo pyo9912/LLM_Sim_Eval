@@ -262,7 +262,7 @@ def get_instruction(dataset):
     return seeker_instruction
 
 def get_model_args(args):
-    if args.crs_model == 'kbrd':
+    if 'kbrd' in args.crs_model:
         args_dict = {
             'debug': args.debug, 'kg_dataset': args.kg_dataset, 'hidden_size': args.hidden_size,
             'entity_hidden_size': args.entity_hidden_size, 'num_bases': args.num_bases,
