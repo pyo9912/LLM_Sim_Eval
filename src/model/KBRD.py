@@ -35,8 +35,8 @@ class KBRD():
         self.context_max_length = context_max_length
         self.entity_max_length = entity_max_length
         # model
-        self.rec_model_path =  os.path.join(os.path.dirname(os.getcwd()),f"src/{rec_model}") 
-        self.conv_model_path = os.path.join(os.path.dirname(os.getcwd()),f"src/{conv_model}") 
+        self.rec_model =  os.path.join(os.path.dirname(os.getcwd()),f"src/{rec_model}") 
+        self.conv_model = os.path.join(os.path.dirname(os.getcwd()),f"src/{conv_model}") 
         # self.rec_model = f"/home/user/junpyo/iEvaLM-CRS-main/src/{rec_model}"
         # self.conv_model = f"/home/user/junpyo/iEvaLM-CRS-main/src/{conv_model}"
         # conv
