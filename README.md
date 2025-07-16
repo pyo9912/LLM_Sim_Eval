@@ -19,7 +19,7 @@ we propose an **i**nteractive **Eval**uation approach based on **LLM**s named **
 ## 🌟 Perfermance
 **Highlights**:
 - 🔝 In this project, we evaluated recommendation accuracy using the framework proposed by iEvaLM. The results are as follows.
-- 🦙 Additionally, we included the performance of the LLaMa3-8b-Instruct model, which was not covered in iEvaLM.
+- 🦙 Additionally, we included the performance of the LLaMa7-7b-Chat model, which was not covered in iEvaLM.
 <p align="center">Performance of CRSs and ChatGPT using different evaluation approaches.</p>
 <table border="1" align="center">
   <tbody >
@@ -27,7 +27,7 @@ we propose an **i**nteractive **Eval**uation approach based on **LLM**s named **
     <td colspan="2">Model</td>
     <td colspan="3">KBRD</td>
     <td colspan="3">UniCRS</td>
-    <td colspan="3">LLaMa3</td>
+    <td colspan="3">LLaMa2</td>
     <td colspan="3">ChatGPT</td>
   </tr>
   <tr align="center">
