@@ -16,52 +16,6 @@ we propose an **i**nteractive **Eval**uation approach based on **LLM**s named **
 </p>
 
 
-## 🚀 Quick Start
-
-### Requirements
-
-- python == 3.9.16
-- pytorch == 1.13.1
-- transformers == 4.28.1
-- pyg == 2.3.0
-- accelerate == 0.18.0
-
-### Download Models
-
-You can download our fine-tuned models from the [link](https://drive.google.com/drive/folders/1h2AcRn3cd9qXToM9hFAXFV5evXJM-wyD?usp=sharing), which include recommendation and conversation models of **KBRD**, **BARCOR** and **UniCRS**. Please put the downloaded model into src/utils/model directory.
-
-### Interact with the user simulator
-
-- dataset: [redial, opendialkg]
-- mode: [ask, chat]
-- model: [kbrd, barcor, unicrs, chatgpt]
-
-```bash
-cd script
-bash {dataset}/cache_item.sh 
-bash {dataset}/{mode}_{model}.sh 
-```
-
-You can customize your iEvaLM-CRS by specifying these configs:
-- `--api_key`: your API key
-- `--turn_num`: number of conversation turns. We employ five-round interaction in iEvaLM-CRS.
-
-After the execution, you will find detailed interaction information under "save_{turn_num}/{mode}/{model}/{dataset}/".
-
-### Evaluate
-
-```bash
-cd script
-bash {dataset}/Rec_eval.sh
-```
-
-You can customize your iEvaLM-CRS by specifying these configs:
-- `--turn_num`: number of conversation turns.
-- `--mode`: [ask, chat]
-
-After the execution, you will find evaluation results under "save_{turn_num}/result/{mode}/{model}/{dataset}.json".
-
-
 ## 🌟 Perfermance
 **Highlights**:
 - 🔝 In this project, we evaluated recommendation accuracy using the framework proposed by iEvaLM. The results are as follows.
@@ -78,25 +32,25 @@ After the execution, you will find evaluation results under "save_{turn_num}/res
   </tr>
   <tr align="center">
     <td rowspan="3">ReDial</td>
-    <td>H@1</td>
-    <td>0.030</td>
-    <td>0.110</td>
-    <td>0.389</td>
-    <td>0.435</td>
+    <td colspan="3">H@1</td>
+    <td colspan="3">0.030</td>
+    <td colspan="3">0.110</td>
+    <td colspan="3">0.389</td>
+    <td colspan="3">0.435</td>
   </tr>
   <tr align="center">
-    <td>H@5</td>
-    <td>0.113</td>
-    <td>0.298</td>
-    <td>0.592</td>
-    <td>0.722</td>
+    <td colspan="3">H@5</td>
+    <td colspan="3">0.113</td>
+    <td colspan="3">0.298</td>
+    <td colspan="3">0.592</td>
+    <td colspan="3">0.722</td>
   </tr>
   <tr align="center">
     <td>H@10</td>
-    <td>0.197</td>
-    <td>0.423</td>
-    <td>0.665</td>
-    <td>0.806</td>
+    <td colspan="3">0.197</td>
+    <td colspan="3">0.423</td>
+    <td colspan="3">0.665</td>
+    <td colspan="3">0.806</td>
   </tr>
   </tbody>
 
