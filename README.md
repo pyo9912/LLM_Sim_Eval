@@ -24,7 +24,7 @@ we propose an **i**nteractive **Eval**uation approach based on **LLM**s named **
 <table border="1" align="center">
   <tbody >
   <tr align="center">
-    <td colspan="2">Model</td>
+    <td colspan="3">Model</td>
     <td colspan="3">KBRD</td>
     <td colspan="3">UniCRS</td>
     <td colspan="3">LLaMa3</td>
