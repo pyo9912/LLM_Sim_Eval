@@ -1,8 +1,8 @@
 # Rethinking the Evaluation for Conversational Recommendation in the Era of Large Language Models
 
-This repo provides the source code & data of our paper: [Rethinking the Evaluation for Conversational Recommendation in the Era of Large Language Models](https://arxiv.org/abs/2305.13112) (Arxiv 2023).
+This repo provides the source code & data based on the paper: [Rethinking the Evaluation for Conversational Recommendation in the Era of Large Language Models](https://arxiv.org/abs/2305.13112) (Arxiv 2023).
 
-## 😀 Overview
+## 😀 Overview for the base project
 
 **Highlights**:
 - 1️⃣ We are the first to examine ChatGPT in conversational recommendation systematically, the ability of which is **underestimated** in traditional evaluation approach.
