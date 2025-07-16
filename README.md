@@ -24,7 +24,7 @@ we propose an **i**nteractive **Eval**uation approach based on **LLM**s named **
 <table border="1" align="center">
   <tbody >
   <tr align="center">
-    <td colspan="3">Model</td>
+    <td colspan="2">Model</td>
     <td colspan="3">KBRD</td>
     <td colspan="3">UniCRS</td>
     <td colspan="3">LLaMa3</td>
@@ -32,14 +32,14 @@ we propose an **i**nteractive **Eval**uation approach based on **LLM**s named **
   </tr>
   <tr align="center">
     <td rowspan="3">ReDial</td>
-    <td colspan="3">H@1</td>
+    <td>H@1</td>
     <td colspan="3">0.030</td>
     <td colspan="3">0.110</td>
     <td colspan="3">0.389</td>
     <td colspan="3">0.435</td>
   </tr>
   <tr align="center">
-    <td colspan="3">H@5</td>
+    <td>H@5</td>
     <td colspan="3">0.113</td>
     <td colspan="3">0.298</td>
     <td colspan="3">0.592</td>
